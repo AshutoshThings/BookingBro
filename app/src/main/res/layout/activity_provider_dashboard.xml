@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#F3F5FF">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Provider Dashboard"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:textColor="#5B3EFF"
+        android:layout_marginBottom="30dp" />
+
+    <Button
+        android:id="@+id/addSlotBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Slot" />
+
+    <Button
+        android:id="@+id/viewBookingsBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Bookings"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

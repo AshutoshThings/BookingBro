@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="#F3F5FF">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Slot"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#5B3EFF" />
+
+    <EditText
+        android:id="@+id/dateEt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date (10 Apr 2026)"
+        android:layout_marginTop="20dp" />
+
+    <EditText
+        android:id="@+id/timeEt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Time (10:00 AM - 10:30 AM)"
+        android:layout_marginTop="12dp" />
+
+    <Button
+        android:id="@+id/saveSlotBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Slot"
+        android:layout_marginTop="20dp" />
+
+</LinearLayout>
