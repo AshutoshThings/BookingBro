@@ -7,6 +7,12 @@ import android.widget.EditText
 import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -25,7 +31,7 @@ class RegisterActivity : AppCompatActivity() {
 
         val registerBtn = findViewById<Button>(R.id.registerBtn)
 
-        val selectedRole = intent.getStringExtra("role")
+        val selectedRole = intent.getStringExtra("role") ?: "customer"
 
         if (selectedRole == "customer") {
             businessNameEt.visibility = View.GONE
@@ -33,8 +39,14 @@ class RegisterActivity : AppCompatActivity() {
             locationEt.visibility = View.GONE
         }
 
-        registerBtn.setOnClickListener {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:3001/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
+        val apiService = retrofit.create(AuthApiService::class.java)
+
+        registerBtn.setOnClickListener {
             val name = nameEt.text.toString().trim()
             val email = emailEt.text.toString().trim()
             val phone = phoneEt.text.toString().trim()
@@ -46,7 +58,6 @@ class RegisterActivity : AppCompatActivity() {
             }
 
             if (selectedRole == "provider") {
-
                 val businessName = businessNameEt.text.toString().trim()
                 val category = categoryEt.text.toString().trim()
                 val location = locationEt.text.toString().trim()
@@ -57,13 +68,48 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
 
-            Toast.makeText(this, "Account Created Successfully", Toast.LENGTH_SHORT).show()
+            registerBtn.isEnabled = false
+            registerBtn.text = "Creating Account..."
 
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.putExtra("role", selectedRole)
-            startActivity(intent)
-            finish()
-            finish()
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val requestData = RegisterRequest(
+                        full_name = name,
+                        email = email,
+                        phone = phone,
+                        password = password,
+                        role = selectedRole
+                    )
+
+                    val response = apiService.registerUser(requestData)
+
+                    withContext(Dispatchers.Main) {
+                        registerBtn.isEnabled = true
+                        registerBtn.text = "Register"
+
+                        if (response.isSuccessful) {
+                            Toast.makeText(this@RegisterActivity, "Account Created Successfully!", Toast.LENGTH_SHORT).show()
+
+                            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+                            intent.putExtra("role", selectedRole)
+                            startActivity(intent)
+                            finish()
+
+                        } else if (response.code() == 409) {
+                            Toast.makeText(this@RegisterActivity, "Registration failed: Email or phone number already in use.", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(this@RegisterActivity, "Registration failed. Try again.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        registerBtn.isEnabled = true
+                        registerBtn.text = "Register"
+                        Toast.makeText(this@RegisterActivity, "Network Error: Cannot reach server", Toast.LENGTH_LONG).show()
+                        e.printStackTrace()
+                    }
+                }
+            }
         }
     }
 }

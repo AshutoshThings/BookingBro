@@ -1,7 +1,8 @@
 # Gradle
 .gradle/
 build/
-
+node_modules/
+.env
 # Local config
 local.properties
 
