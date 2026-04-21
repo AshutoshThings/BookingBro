@@ -5,7 +5,7 @@ const app = express()
 const PORT = 3001;
 app.use(express.json());
 app.get('/', (req, res) => {
-    res.send("Hello to the root - The Booking Engine is Online!");
+    res.send("The Booking Engine is Online");
 });
 
 app.post('/api/auth/login', async (req, res) => {

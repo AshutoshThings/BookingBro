@@ -1,47 +1,68 @@
 package com.example.bookingbro
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class CustomerHomeActivity : AppCompatActivity() {
+
+    // 1. Create variables to hold the data while the Activity is alive
+    private var loggedInUserName: String = "User"
+    private var loggedInUserEmail: String = "user@example.com"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_customer_home)
 
-        val providerListView = findViewById<ListView>(R.id.providerListView)
+        // 2. Catch the "sticky notes" passed from LoginActivity
+        loggedInUserName = intent.getStringExtra("USER_NAME") ?: "User"
+        loggedInUserEmail = intent.getStringExtra("USER_EMAIL") ?: "user@example.com"
 
-        val providers = arrayListOf(
-            Provider("Rahul Barber Shop", "Barber", "Ghaziabad"),
-            Provider("City Clinic", "Doctor", "Noida"),
-            Provider("Style Salon", "Salon", "Delhi")
-        )
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
-        val providerNames = providers.map {
-            "${it.name}\n${it.category} • ${it.location}"
+        // Load the HomeFragment as the default screen when the app opens
+        if (savedInstanceState == null) {
+            val homeFragment = HomeFragment()
+            homeFragment.arguments = Bundle().apply {
+                putString("USER_NAME", loggedInUserName)
+            }
+            replaceFragment(homeFragment)
         }
 
-        val adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_list_item_1,
-            providerNames
-        )
-
-        providerListView.adapter = adapter
-
-        providerListView.setOnItemClickListener { _, _, position, _ ->
-
-            val provider = providers[position]
-
-            val intent = Intent(this, ProviderDetailsActivity::class.java)
-            intent.putExtra("provider_name", provider.name)
-            intent.putExtra("provider_category", provider.category)
-            intent.putExtra("provider_location", provider.location)
-
-            startActivity(intent)
+        // Handle clicks on the bottom navigation bar
+        bottomNav.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> {
+                    val homeFragment = HomeFragment()
+                    homeFragment.arguments = Bundle().apply {
+                        putString("USER_NAME", loggedInUserName)
+                    }
+                    replaceFragment(homeFragment)
+                    true
+                }
+                R.id.nav_profile -> {
+                    val profileFragment = ProfileFragment()
+                    profileFragment.arguments = Bundle().apply {
+                        // 3. Pack BOTH the name and the email into the Bundle for the profile screen!
+                        putString("USER_NAME", loggedInUserName)
+                        putString("USER_EMAIL", loggedInUserEmail)
+                    }
+                    replaceFragment(profileFragment)
+                    true
+                }
+                // If you have more menu items, add them here!
+                else -> false
+            }
         }
+
+    }
+
+    // This function does the actual swapping of the screens
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }

@@ -83,11 +83,22 @@ class LoginActivity : AppCompatActivity() {
 
                             // 4. Route them to the correct dashboard
                             if (serverRole == "customer") {
-                                startActivity(Intent(this@LoginActivity, CustomerHomeActivity::class.java))
+                                // 1. Create the new Intent
+                                val dashboardIntent = Intent(this@LoginActivity, CustomerHomeActivity::class.java)
+                                // 2. Attach the name to this specific Intent
+                                dashboardIntent.putExtra("USER_NAME", userName)
+                                dashboardIntent.putExtra("USER_EMAIL", email)
+                                // 3. Send it!
+                                startActivity(dashboardIntent)
                             } else {
-                                startActivity(Intent(this@LoginActivity, ProviderDashboardActivity::class.java))
+                                // Do the exact same thing for the provider
+                                val providerIntent = Intent(this@LoginActivity, ProviderDashboardActivity::class.java)
+                                providerIntent.putExtra("USER_NAME", userName)
+                                providerIntent.putExtra("USER_EMAIL", email)
+                                startActivity(providerIntent)
                             }
-                            finish() // Destroy the login screen
+
+                            finish()
 
                         } else {
                             Toast.makeText(this@LoginActivity, "Login Failed: Wrong email or password", Toast.LENGTH_SHORT).show()
